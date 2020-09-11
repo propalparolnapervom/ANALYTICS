@@ -3,6 +3,7 @@
 
 # Documentation
 [ES official](https://www.elastic.co/guide/en/elasticsearch/reference/7.x/snapshots-take-snapshot.html)
+
 [AWS ES official](https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-managedomains-snapshots.html)
 
 
@@ -104,5 +105,6 @@ curl -XPOST -H "Content-Type: application/json" -d @${JSON_CONFIG_NAME} ${VPC_EN
 
 # Restore
 [snapshots-restore-snapshot](https://www.elastic.co/guide/en/elasticsearch/reference/7.x/snapshots-restore-snapshot.html)
+
 [es-managedomains-snapshots](https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-managedomains-snapshots.html)
 
