@@ -99,11 +99,15 @@ curl -XGET ${VPC_ENDPOINT}/_snapshot/${ES_REPO}/_all?pretty | jq
 
 ## STATUS
 
-Check if there's snapshot in process
+Sho all currently running SS in the cluster
 
 (because you can't take a new snapshot if one is currently in progress)
 ```
 curl -XGET ${VPC_ENDPOINT}/_snapshot/_status | jq
+
+   OR
+
+curl -XGET ${VPC_ENDPOINT}/_snapshot/${ES_REPO}/_current | jq
 ```
 
 
