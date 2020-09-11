@@ -45,6 +45,58 @@ curl -X GET ${VPC_ENDPOINT}/_cat/snapshots/${ES_REPO}?v&s=id
 ```
 
 
+
+
+
+
+## DESCRIBE
+
+Describe specific ES snapshot (`snapshot_1` in this case)
+```
+SS_NAME_EXISTING="snapshot_1"
+curl -XGET ${VPC_ENDPOINT}/_snapshot/${ES_REPO}/${SS_NAME_EXISTING} | jq
+
+   {
+     "snapshots": [
+       {
+         "snapshot": "snapshot_1",
+         "uuid": "asdfafadfadsfasdfasdasdf",
+         "version_id": 234562,
+         "version": "7.4.2",
+         "indices": [
+           "<index_name_1>",
+           "<index_name_2>",
+           ...
+           "<index_name_N>"
+         ],
+         "include_global_state": true,
+         "state": "SUCCESS",
+         "start_time": "2020-08-05T15:11:00.791Z",
+         "start_time_in_millis": 1596640260791,
+         "end_time": "2020-08-05T15:26:55.875Z",
+         "end_time_in_millis": 1596641215875,
+         "duration_in_millis": 955084,
+         "failures": [],
+         "shards": {
+           "total": 631,
+           "failed": 0,
+           "successful": 631
+         }
+       }
+     ]
+   }
+```
+
+
+Describe each ES snapshot
+```
+curl -XGET ${VPC_ENDPOINT}/_snapshot/${ES_REPO}/_all?pretty | jq
+```
+
+
+
+
+
 ## STATUS
 
 Check if there's snapshot in process
@@ -53,6 +105,91 @@ Check if there's snapshot in process
 ```
 curl -XGET ${VPC_ENDPOINT}/_snapshot/_status | jq
 ```
+
+
+
+
+## CREATE: Automated
+
+For AWS managed ES: we don't have ability to configure automatic snapshots.
+
+They are done automatically each 1h.
+
+
+
+
+## CREATE: Manual
+
+
+[Docs](https://www.elastic.co/guide/en/elasticsearch/reference/7.x/snapshots-take-snapshot.html)
+
+
+### SS of all cluster 
+
+Make a SS of all data streams and open indices in the cluster.
+
+Define a name for the SS
+```
+SS_NAME_TO_CREATE="snapshot_3"
+```
+
+> During snapshot initialization, information about all previous snapshots is loaded into memory, which means that in large repositories it may take several seconds (or even minutes) for this request to return even if the `wait_for_completion` parameter is set to false.
+
+```
+curl -XPUT ${VPC_ENDPOINT}/_snapshot/${ES_MAN_REPO}/${SS_NAME_TO_CREATE}
+```
+
+
+### SS of specific index
+
+Make a snapshot of only specific index
+
+Define SS name
+```
+SS_NAME_TO_CREATE="snapshot_3"
+```
+
+Define a JSON file with necessary snapshot configs
+```
+JSON_CONFIG_NAME="/tmp/ss.json"
+```
+
+Create and fill out a JSON file with indices list and metadata
+```
+cat <<EOT > ${JSON_CONFIG_NAME}
+{
+  "indices": "dev_90_ports,test_90_vessel_technical_specification",
+  "ignore_unavailable": true,
+  "include_global_state": false,
+  "metadata": {
+    "taken_by": "Sergii Burtovyi",
+    "taken_because": "Test backup attempt"
+  }
+}
+EOT
+
+cat ${JSON_CONFIG_NAME}
+```
+
+Take a snapshot
+```
+curl -XPOST -H "Content-Type: application/json" -d @${JSON_CONFIG_NAME} ${VPC_ENDPOINT}/_snapshot/${ES_REPO}/${SS_NAME_TO_CREATE}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
