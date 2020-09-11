@@ -133,10 +133,19 @@ Define a name for the SS
 SS_NAME_TO_CREATE="snapshot_3"
 ```
 
+Check if there's snapshot in process
+
+> You can't take a new snapshot if one is currently in progress)
+```
+curl -XGET ${VPC_ENDPOINT}/_snapshot/_status | jq
+```
+
+
+
 > During snapshot initialization, information about all previous snapshots is loaded into memory, which means that in large repositories it may take several seconds (or even minutes) for this request to return even if the `wait_for_completion` parameter is set to false.
 
 ```
-curl -XPUT ${VPC_ENDPOINT}/_snapshot/${ES_MAN_REPO}/${SS_NAME_TO_CREATE}
+curl -XPUT ${VPC_ENDPOINT}/_snapshot/${ES_REPO}/${SS_NAME_TO_CREATE}
 ```
 
 
